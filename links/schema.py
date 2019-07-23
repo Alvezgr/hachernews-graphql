@@ -5,7 +5,7 @@ from links.models import Link
 
 
 class LinkType(DjangoObjectType):
-    """DjangoObjectType for GraphQL"""
+    """Type class for Link"""
 
     class Meta:
         model = Link
@@ -23,7 +23,9 @@ class Query(graphene.ObjectType):
 
 
 class CreateLink(graphene.Mutation):
-    """Class for mutation in GraphQL"""
+    """This mutation will create Links
+    an url and a description it's required
+    """
 
     id = graphene.Int()
     url = graphene.String()
@@ -36,7 +38,7 @@ class CreateLink(graphene.Mutation):
 
 
     def mutate(self, info, url, description):
-        """Fuction that will mutate data"""
+        """mutate method for Link"""
         link = Link(url=url, description=description)
         link.save()
 
@@ -48,5 +50,5 @@ class CreateLink(graphene.Mutation):
 
 
 class Mutation(graphene.ObjectType):
-    """Class Mutation from graphene ObjectType"""
+    """Mutation Class"""
     create_link = CreateLink.Field()
