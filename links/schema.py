@@ -23,18 +23,32 @@ class VoteType(DjangoObjectType):
 class Query(graphene.ObjectType):
     """Class query for the GraphQL server"""
 
-    links = graphene.List(LinkType, search=graphene.String())
+    links = graphene.List(
+        LinkType,
+        search=graphene.String(),
+        first=graphene.Int(),
+        skip=graphene.Int(),
+        )
     votes = graphene.List(VoteType)
 
-    def resolve_links(self, info, search=None, **kwargs):
+    def resolve_links(self, info, search=None, first=None, skip=None, **kwargs):
         """Function for resolver for Link"""
+        qs = Link.objects.all()
+
         if search:
             filter = (
                 Q(url__icontains=search) |
                 Q(description__icontains=search)
             )
-            return Link.objects.filter(filter)
-        return Link.objects.all()
+            qs = qs.filter(filter)
+
+        if skip:
+            qs = qs[skip:]
+
+        if first:
+            qs = qs[:first]
+
+        return qs
 
     def resolve_votes(self, info, **kwargs):
         """Function for resolver votes"""
